@@ -16,7 +16,7 @@ test_dir = 'datasets/datasets/test/'
 # 图像处理
 train_transform = transforms.Compose([
 
-    transforms.Resize((224, 224)),  # 调整大小
+    transforms.Resize((96, 96)),  # 调整大小
     # transforms.RandomCrop((224,224)),# 随机剪裁
     transforms.RandomHorizontalFlip(p=0.5),  # 随机翻转
     transforms.ColorJitter(
@@ -34,7 +34,7 @@ train_transform = transforms.Compose([
     transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
 ])
 test_transform = transforms.Compose([
-    transforms.Resize((224, 224)),
+    transforms.Resize((96, 96)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
 ])
@@ -156,7 +156,7 @@ class Vgg16_net(nn.Module):
             nn.Linear(512, 256),
             nn.ReLU(inplace=True),
             nn.Dropout(0.5),
-            nn.Linear(256, 10)
+            nn.Linear(256, 9)
         )
 
     def forward(self, x):
@@ -170,33 +170,43 @@ class Vgg16_net(nn.Module):
         return x
 
 
+# imgs,labels = next(iter(test_dl))
+# models = TestNetBN()
+# models(imgs)
+# model = Vgg16_net()
 # 加载预训练模型
 model = torchvision.models.vgg16(pretrained=True)
-# model.classifier = torch.nn.Sequential(
-#     torch.nn.Linear(25088, 4096),
-#     torch.nn.ReLU(),
-#     torch.nn.Dropout(p=0.5),
-#     torch.nnLinear(4096, 4096),
-#     torch.nn.ReLU(),
-#     torch.nn.Dropout(p=0.5),
-#     torch.Linear(4096, 2)
-# )
-
+# model.add_module("plain",
+#                  torch.nn.Linear(224 * 224 * 3, 4096),
+#                  torch.nn.ReLU(),
+#                  torch.nn.Dropout(p=0.5),
+#                  torch.nn.Linear(4096, 4096),
+#                  torch.nn.ReLU(),
+#                  torch.nn.Dropout(p=0.5),
+#                  torch.nn.Linear(4096, 224 * 224 * 3)
+#                  )
+model.classifier = torch.nn.Sequential(
+    torch.nn.Linear(25088, 4096),
+    torch.nn.ReLU(),
+    torch.nn.Dropout(p=0.5),
+    torch.nn.Linear(4096, 4096),
+    torch.nn.ReLU(),
+    torch.nn.Dropout(p=0.5),
+    torch.nn.Linear(4096, 4096),
+    torch.nn.ReLU(),
+    torch.nn.Dropout(p=0.5),
+    torch.nn.Linear(4096, 9)
+)
+# print(model.parameters())
 # 模型放入加速运算显卡GPU
 # 冻结 卷积基
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 for param in model.features.parameters():
     param.requires_grad = False
-# 设置分类器
-model.classifier[-1].out_features = 9
-model.classifier[-1] = nn.Linear(model.classifier[-1].in_features, 9)
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = model.to(device)
 loss_fn = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 exp_lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
-
-
-# 搭建训练步骤
 
 
 def train(dataloader, model, loss_fn, optimizer):
@@ -248,7 +258,7 @@ def test(dataloader, model):
     return test_loss, correct
 
 
-epochs = 50
+epochs = 3
 train_acc = []
 train_loss = []
 test_acc = []
