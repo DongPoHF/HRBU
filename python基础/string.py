@@ -107,21 +107,60 @@ True
 # str1 = str.splitlines()  # 换行切割
 
 # join() list ---> str
-list_1 = ['https://www', 'baidu', 'com']
-'.'.join(list_1)
-# 填充    0填充     左填充 ljust(指定长度)  右填充 rljust
-str2 = 'aa'
-str2.zfill(11)
-str2.center(11, '*')  # 中间位填充
-
-# 去掉两侧空格
-html = '    <span class="pl">又名:</span>&nbsp;Death And All His Friends'
-html.strip()  # lstrip() 只去左  rstrip() 去右
-# html.strip('>') #去掉左右两侧 的东西 两头！！！ 两侧相同字符
-# 去掉两侧空格
-html = '    <span class="pl">又名:</span>&nbsp;Death And All His Friends  '
-str1 = html.strip()
-print(str1)
+# list_1 = ['https://www', 'baidu', 'com']
+# '.'.join(list_1)
+# # 填充    0填充     左填充 ljust(指定长度)  右填充 rljust
+# str2 = 'aa'
+# str2.zfill(11)
+# str2.center(11, '*')  # 中间位填充
+#
+# # 去掉两侧空格
+# html = '    <span class="pl">又名:</span>&nbsp;Death And All His Friends'
+# html.strip()  # lstrip() 只去左  rstrip() 去右
+# # html.strip('>') #去掉左右两侧 的东西 两头！！！ 两侧相同字符
+# # 去掉两侧空格
+# html = '    <span class="pl">又名:</span>&nbsp;Death And All His Friends  '
+# str1 = html.strip()
+# print(str1)
 '''
 <span class="pl">又名:</span>&nbsp;Death And All His Friends
 '''
+# 不设置指定位置，按默认顺序
+# info = '我叫{},今年{}，我来自{}'.format('张三', '22', '哈尔滨')
+# print(info)
+'''
+我叫张三,今年22，我来自哈尔滨
+我叫李四,今年哈尔滨，我来自22
+'''
+# # 设置指定位置
+# name = '李四'
+# age = 22
+# where = '哈尔滨'
+# info = '我叫{0},今年{2}，我来自{1}'.format(name, age, where)
+# print(info)
+# 通过关键字的方式传递参数
+# name = '李四'
+# age = 22
+# where = '哈尔滨'
+# info = '我叫{name},今年{age}，我来自{where}'.format(name='王五', age='23', where='哈尔滨')
+# print(info)
+'''
+我叫王五,今年23，我来自哈尔滨
+张三,20,哈尔滨学院
+3.15
+10001
+200,000,000
+'''
+# 通过下标的方式传递参数
+# info = ['张三', 20, '哈尔滨学院']
+# info_str = '{0[0]},{0[1]},{0[2]}'.format(info)
+# print(info_str)
+# 精度与类型f
+info = '{:.2f}'.format(3.1495926)
+print(info)
+# 进制类型
+# b--2  d--10 o--8  x--16
+info = '{:b}'.format(17)
+print(info)
+info = '{:,}'.format(200000000)
+print(info)
